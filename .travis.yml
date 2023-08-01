@@ -1,0 +1,17 @@
+sudo: required
+# We need superuser permissions for docker, to excute the build
+
+services:
+  - docker #Travis CI will install a copy of Docker into our running container
+
+# Series of commands to be executed before tests are ran
+before_install:
+  - docker build -t ragini/docker-react -f Dockerfile.dev .
+  # To avoid copy pasting the id after image is created, use -t flag and tag the image with a name
+  # Instead of ragini/docker-react, we can use any single word too
+
+# Series of commands required needed to run test
+# Travis will notice each command's output and if ever get return status of number other than 0, it will understand that build failed.
+script:
+# Default behaviour of npm run test is to provide a shell interface and never exit and keep waiting for user input in the terminal. So, to make sure, it exits after running tests once, add -- --coverage
+  - docker run -e CI=true ragini/docker-react npm run test -- --coverage
